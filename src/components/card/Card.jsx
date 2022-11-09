@@ -1,7 +1,7 @@
 import React from "react";
 
 import plus from "../../assets/img/plus.svg";
-import sneaker1 from "../../assets/sneakers/image 5.jpg";
+import sneaker1 from "../../assets/sneakers/image5.jpg";
 import redLike from "../../assets/img/redlike.svg";
 
 import "./card.scss";
@@ -9,7 +9,9 @@ import "./card.scss";
 const Card = () => {
   return (
     <div className="card">
-      <img className="like" width={32} height={32} src={redLike} alt="Like" />
+      <div className="favourite">
+        <img className="like" width={32} height={32} src={redLike} alt="Like" />
+      </div>
       <img width={133} height={120} src={sneaker1} alt="sneaker" />
       <p>Men's Sneaker Nike Blazer Mid Suede</p>
       <div className="cardBottom">
