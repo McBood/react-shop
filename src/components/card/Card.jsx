@@ -1,26 +1,36 @@
-import React from "react";
+import React, { useState } from "react";
 
 import plus from "../../assets/img/plus.svg";
-import sneaker1 from "../../assets/sneakers/image5.jpg";
+import checked from "../../assets/img/checked.svg";
 import redLike from "../../assets/img/redlike.svg";
 
 import "./card.scss";
 
-const Card = () => {
+const Card = ({ title, price, imageUrl, onPlus, onFavorite }) => {
+  const [isAdded, setIsAdded] = useState(false);
+
+  const onClickPlus = () => {
+    onPlus({ title, price, imageUrl });
+    setIsAdded(!isAdded);
+  };
   return (
     <div className="card">
       <div className="favourite">
         <img className="like" width={32} height={32} src={redLike} alt="Like" />
       </div>
-      <img width={133} height={120} src={sneaker1} alt="sneaker" />
-      <p>Men's Sneaker Nike Blazer Mid Suede</p>
+      <img width={133} height={120} src={imageUrl} alt="sneaker" />
+      <p>{title}</p>
       <div className="cardBottom">
         <div className="cardInfo">
           <p>Price:</p>
-          <b>12 999 rub</b>
+          <b>{price}</b>
         </div>
         <button>
-          <img src={plus} alt="plus" />
+          <img
+            src={isAdded ? checked : plus}
+            alt="plus"
+            onClick={onClickPlus}
+          />
         </button>
       </div>
     </div>

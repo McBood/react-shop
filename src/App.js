@@ -1,154 +1,83 @@
 import "./App.scss";
-import logo from "./assets/img/logo.svg";
-import like from "./assets/img/like.svg";
-import shop from "./assets/img/shop.svg";
-import profile from "./assets/img/profile.svg";
-import Card from "./components/card/Card";
+
 import vector from "./assets/img/vector.svg";
-import sneaker1 from "./assets/sneakers/image5.jpg";
-import remove from "./assets/img/otmena.svg";
+
+import Card from "./components/card/Card";
+import Header from "./components/Header";
+import Overlay from "./components/Overlay";
+import axios from "axios";
+
+import { useState, useEffect } from "react";
 
 function App() {
+  const [items, setItems] = useState([]);
+  const [cartItems, setCartItems] = useState([]);
+  const [cartOpened, setCartOpened] = useState(false);
+  const [searchValue, setSearchValue] = useState([]);
+  useEffect(() => {
+    axios
+      .get("https://636e0cc9b567eed48ad14f31.mockapi.io/items")
+      .then((res) => {
+        setItems(res.data);
+      });
+    axios
+      .get("https://636e0cc9b567eed48ad14f31.mockapi.io/cart")
+      .then((res) => {
+        setCartItems(res.data);
+      });
+  }, []);
+
+  console.log(cartItems);
+
+  const onChangeInput = (event) => {
+    setSearchValue(event.target.value);
+  };
+
+  const onAddCart = (obj) => {
+    axios.post("https://636e0cc9b567eed48ad14f31.mockapi.io/cart", obj);
+    setCartItems((prev) => [...prev, obj]);
+  };
+
+  const onRemoveCart = (id) => {
+    axios.delete(`https://636e0cc9b567eed48ad14f31.mockapi.io/cart/${id}`);
+    setCartItems((prev) => prev.filter((item) => item.id !== id));
+  };
   return (
     <div className="wrapper">
-      <div className="overlay">
-        <div className="rightSide">
-          <h2>Korzina</h2>
-          <div className="items">
-            <div className="cartItem">
-              <img
-                className="cardItemPhoto"
-                width={70}
-                height={70}
-                src={sneaker1}
-                alt="sneaker"
-              />
-              <div className="cartItemInfo">
-                <p>Мужские Кроссовки Nike Air Max 270</p>
-                <b>12 999 руб.</b>
-              </div>
-              <img className="removeBtn" src={remove} alt="remove" />
-            </div>
-            <div className="cartItem">
-              <img
-                className="cardItemPhoto"
-                width={70}
-                height={70}
-                src={sneaker1}
-                alt="sneaker"
-              />
-              <div className="cartItemInfo">
-                <p>Мужские Кроссовки Nike Air Max 270</p>
-                <b>12 999 руб.</b>
-              </div>
-              <img className="removeBtn" src={remove} alt="remove" />
-            </div>
-            <div className="cartItem">
-              <img
-                className="cardItemPhoto"
-                width={70}
-                height={70}
-                src={sneaker1}
-                alt="sneaker"
-              />
-              <div className="cartItemInfo">
-                <p>Мужские Кроссовки Nike Air Max 270</p>
-                <b>12 999 руб.</b>
-              </div>
-              <img className="removeBtn" src={remove} alt="remove" />
-            </div>
-            <div className="cartItem">
-              <img
-                className="cardItemPhoto"
-                width={70}
-                height={70}
-                src={sneaker1}
-                alt="sneaker"
-              />
-              <div className="cartItemInfo">
-                <p>Мужские Кроссовки Nike Air Max 270</p>
-                <b>12 999 руб.</b>
-              </div>
-              <img className="removeBtn" src={remove} alt="remove" />
-            </div>
-            <div className="cartItem">
-              <img
-                className="cardItemPhoto"
-                width={70}
-                height={70}
-                src={sneaker1}
-                alt="sneaker"
-              />
-              <div className="cartItemInfo">
-                <p>Мужские Кроссовки Nike Air Max 270</p>
-                <b>12 999 руб.</b>
-              </div>
-              <img className="removeBtn" src={remove} alt="remove" />
-            </div>
-            <div className="cartItem">
-              <img
-                className="cardItemPhoto"
-                width={70}
-                height={70}
-                src={sneaker1}
-                alt="sneaker"
-              />
-              <div className="cartItemInfo">
-                <p>Мужские Кроссовки Nike Air Max 270</p>
-                <b>12 999 руб.</b>
-              </div>
-              <img className="removeBtn" src={remove} alt="remove" />
-            </div>
-          </div>
-          <ul className="cartDown">
-            <li>
-              <span>Итого:</span>
-              <div></div>
-              <b>21 498 руб. </b>
-            </li>
-            <li>
-              <span> Налог 5%:</span>
-              <div></div>
-              <b>1074 руб.</b>
-            </li>
-          </ul>
-          <button>Оформить заказ</button>
-        </div>
-      </div>
-      <header>
-        <div className="headerLeft">
-          <img width={40} height={40} src={logo} alt="logo" />
-          <div className="headerInfo">
-            <h3>React Shop</h3>
-            <p>Best sneaker store</p>
-          </div>
-        </div>
-        <ul className="headerRight">
-          <li>
-            <img width={18} height={18} src={shop} alt="shop" />
-            <span>1250 rub</span>
-          </li>
-          <li>
-            <img width={18} height={18} src={like} alt="like" />
-          </li>
-          <li>
-            <img width={18} height={18} src={profile} alt="profile" />
-          </li>
-        </ul>
-      </header>
+      {cartOpened ? (
+        <Overlay
+          items={cartItems}
+          onRemove={onRemoveCart}
+          onCloseCart={() => setCartOpened(false)}
+        />
+      ) : null}
+      <Header onClickCart={() => setCartOpened(true)} />
       <div className="content">
         <div className="contentTop">
-          <h1>All sneakers</h1>
+          <h1>
+            {searchValue ? `Поиск по запросу: ${searchValue}` : "All sneakers"}
+          </h1>
           <div className="searchBlock">
             <img src={vector} alt="vector" />
-            <input placeholder="Search" />
+            <input
+              onChange={onChangeInput}
+              value={searchValue}
+              placeholder="Search"
+            />
           </div>
         </div>
         <div className="cardList">
-          <Card />
-          <Card />
-          <Card />
-          <Card />
+          {items
+            .filter((item) => item.name.toLowerCase().includes(searchValue))
+            .map((item, index) => (
+              <Card
+                key={index}
+                title={item.name}
+                price={item.price}
+                imageUrl={item.imageUrl}
+                onPlus={(obj) => onAddCart(obj)}
+              />
+            ))}
         </div>
       </div>
     </div>
